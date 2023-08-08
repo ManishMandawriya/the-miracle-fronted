@@ -21,16 +21,13 @@ const Index = () => {
         makeRequest(null, "songs/home-page-data")
     }, [])
 
-    useEffect(() => {
-        // console.log("data>>>>>>>>>>>>>>>>>>>>>>>", data?.data);
-    }, [data])
 
 
     return (
         <React.Fragment>
             {
                 data?.data?.length > 0 ?
-                    data?.data?.map((home_comp_data: any, home_comp_key: any) => {
+                    data?.data?.map((home_comp_data: any, home_comp_key: any) => {                      
 
                         return (
                             <>

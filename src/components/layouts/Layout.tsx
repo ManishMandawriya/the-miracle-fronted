@@ -1,8 +1,9 @@
+'use client'
 import React, { ReactNode, useEffect, useState } from 'react'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import Footer from './Footer'
-import AudioPlayer from './AudioPlayer'
+import AudioPlayer from '../player/AudioPlayer'
 import Register from '../auth/Register'
 import Login from '../auth/Login'
 import { useSelector } from 'react-redux'
@@ -15,6 +16,19 @@ interface LayoutProps {
     children: ReactNode
 }
 
+// const [isAuthenticated, setIsAuthenticated]: any = useState(false)
+
+// useEffect(() => {
+//     if (typeof window !== 'undefined') {
+//         const isUserLoginToken = localStorage.getItem("isUserLoginToken");
+//         if (isUserLoginToken) {
+//             setIsAuthenticated(true)
+//         } else {
+//             isAuthenticated(false)
+//         }
+//     }
+// }, [])
+
 export default function ({ children }: LayoutProps) {
 
     return (
@@ -26,6 +40,7 @@ export default function ({ children }: LayoutProps) {
                 </div>
                 <Sidebar />
                 <Footer />
+
                 <AudioPlayer />
             </div>
 

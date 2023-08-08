@@ -1,7 +1,22 @@
+import { selectSong, setPlayerState } from '@/redux/actions/PlayerAction';
+import useMakeRequest from '@/utils/apiHelper'
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 
 const WeeklyTop15 = (props: any) => {
+    const dispatch = useDispatch<any>();
     const top15SongsData = props?.HomeDataTop15?.data;
+    const showPlayer = useSelector((state: any) => state.playerState);
+    const { makeRequest }: any = useMakeRequest();
+
+    const setSong = async (songData: any) => {
+        await dispatch(selectSong([songData]))
+        await dispatch(setPlayerState({
+            'audio_id': songData?.id
+        }))        
+        await makeRequest(songData, `songs/listen`, 'post')
+    }
+
 
     return (
         <>
@@ -16,34 +31,50 @@ const WeeklyTop15 = (props: any) => {
                         <div className="col-lg-4 col-md-12 padding_right40">
                             {
                                 top15SongsData?.map((top15: any, key: any) => {
-                                    const songCount = (key + 1).toString().padStart(2, '0'); // Calculate the song count and format it as '01', '02', ...
-
-                                    console.log('top15SongsData>>>>>>>>>>', top15SongsData);
-
+                                    const songCount = (key + 1).toString().padStart(2, '0');
+                                    const songTitle = top15?.song_title;
+                                    const songDuration = (top15?.duration).slice(3);
+                                    const audioImage = top15?.media?.image_file_path;
+                                    const isCurrentSong = top15?.id == showPlayer?.data?.audio_id
                                     return (
                                         <>
-                                            < div className="ms_weekly_box">
+                                            < div className={`ms_weekly_box ${isCurrentSong && 'ms_active_play'}`}>
                                                 <div className="weekly_left">
                                                     <span className="w_top_no">
                                                         {songCount}
                                                     </span>
                                                     <div className="w_top_song">
                                                         <div className="w_tp_song_img">
-                                                            <img src="assets/images/weekly/song1.jpg" alt="" className="img-fluid" />
+                                                            <img src={audioImage} alt="" className="img-fluid" />
                                                             <div className="ms_song_overlay">
                                                             </div>
-                                                            <div className="ms_play_icon">
-                                                                <img src="assets/images/svg/play.svg" alt="" />
-                                                            </div>
+                                                            {
+                                                                isCurrentSong ?
+                                                                    <div className="ms_play_icon">
+                                                                        <div className="ms_bars">
+                                                                            <div className="bar"></div>
+                                                                            <div className="bar"></div>
+                                                                            <div className="bar"></div>
+                                                                            <div className="bar"></div>
+                                                                            <div className="bar"></div>
+                                                                            <div className="bar"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    :
+                                                                    <div className="ms_play_icon" onClick={() => setSong(top15)}>
+                                                                        <img src="assets/images/svg/play.svg" alt="" />
+                                                                    </div>
+                                                            }
                                                         </div>
                                                         <div className="w_tp_song_name">
-                                                            <h3><a href="#">Until I Met You</a></h3>
+                                                            <h3><a href="#">{songTitle}</a></h3>
                                                             <p>Ava Cornish</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="weekly_right">
-                                                    <span className="w_song_time">5:10</span>
+                                                    {/* <span className="w_song_time">5:10</span> */}
+                                                    <span className="w_song_time">{songDuration}</span>
                                                     <span className="ms_more_icon" data-other="1">
                                                         <img src="assets/images/svg/more.svg" alt="" />
                                                     </span>
@@ -59,8 +90,51 @@ const WeeklyTop15 = (props: any) => {
                                         </>
                                     )
                                 })
-
                             }
+
+                            {/* < div className="ms_weekly_box ms_active_play">
+                                <div className="weekly_left">
+                                    <span className="w_top_no">
+                                        08
+                                    </span>
+                                    <div className="w_top_song">
+                                        <div className="w_tp_song_img">
+                                            <img src="assets/images/weekly/song8.jpg" alt="" className="img-fluid" />
+                                            <div className="ms_song_overlay">
+                                            </div>
+                                            <div className="ms_play_icon">
+                                                <div className="ms_bars">
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="w_tp_song_name">
+                                            <h3><a href="#">Dream Your Moments</a></h3>
+                                            <p>Ava Cornish</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="weekly_right">
+                                    <span className="w_song_time">5:10</span>
+                                    <span className="ms_more_icon" data-other="1">
+                                        <img src="assets/images/svg/more.svg" alt="" />
+                                    </span>
+                                </div>
+                                <ul className="more_option">
+                                    <li><a href="#"><span className="opt_icon"><span className="icon icon_fav"></span></span>Add To Favourites</a></li>
+                                    <li><a href="#"><span className="opt_icon"><span className="icon icon_queue"></span></span>Add To Queue</a></li>
+                                    <li><a href="#"><span className="opt_icon"><span className="icon icon_dwn"></span></span>Download Now</a></li>
+                                    <li><a href="#"><span className="opt_icon"><span className="icon icon_playlst"></span></span>Add To Playlist</a></li>
+                                    <li><a href="#"><span className="opt_icon"><span className="icon icon_share"></span></span>Share</a></li>
+                                </ul>
+                            </div>
+                            <div className="ms_divider"></div> */}
+
                             {/* <div className="ms_divider"></div>
                             <div className="ms_weekly_box">
                                 <div className="weekly_left">

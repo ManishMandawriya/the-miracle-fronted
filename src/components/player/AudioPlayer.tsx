@@ -1,11 +1,51 @@
-import React from 'react'
+import { selectSong, setPlayerState } from '@/redux/actions/PlayerAction';
+import useMakeRequest from '@/utils/apiHelper';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 
 const AudioPlayer = () => {
+
+    const dispatch = useDispatch<any>()
+    const [playerVolume, setPlayerVolume] = useState<any>(50);
+    const currentSelectSongData = useSelector((state: any) => state.songs);
+    const playerState = useSelector((state: any) => state.playerState);
+    const { data: userData, makeRequest }: any = useMakeRequest();
+    let audioRef: any = document.getElementById("mainPlayer")
+
+
+    const handlePlayMusic = async () => {
+        if (playerState?.data) {
+            await audioRef.pause();
+            await dispatch(setPlayerState(null))
+        } else {
+            await audioRef.play();
+            await dispatch(setPlayerState({
+                'audio_id': currentSelectSongData?.data[0]?.id
+            }))
+        }
+    }
+
+    useEffect(() => {
+        makeRequest(null, 'users/profile')
+    }, [])
+
+    useEffect(() => {
+        if (userData?.data?.last_played_song) {
+            dispatch(selectSong([userData?.data?.last_played_song]))
+        }
+    }, [userData?.data])
+
     return (
         <>
-            <audio src="">
+            <audio
+                ref={audioRef}
+                id="mainPlayer"
+                src={currentSelectSongData?.data && currentSelectSongData?.data[0]?.media?.audio_file_path}
+                autoPlay={true}
+                hidden={true}
+                preload="true"
+            />
 
-            </audio>
             <div className="ms_player_wrapper">
                 <div className="ms_player_close">
                     <i className="fa fa-angle-up" aria-hidden="true"></i>
@@ -13,14 +53,20 @@ const AudioPlayer = () => {
                 <div className="player_mid">
                     <div className="audio-player">
                         <div id="jquery_jplayer_1" className="jp-jplayer"></div>
-                        <div id="jp_container_1" className="jp-audio" role="application" aria-label="media player">
+                        <div id="jp_container_1 " className={`jp-audio ${playerState?.data && 'jp-state-playing'}`} role="application" aria-label="media player">
                             <div className="player_left">
                                 <div className="ms_play_song">
                                     <div className="play_song_name">
                                         <a href="javascript:void(0);" id="playlist-text">
                                             <div className="jp-now-playing flex-item">
-                                                <div className="jp-track-name"></div>
-                                                <div className="jp-artist-name"></div>
+                                                {
+                                                    currentSelectSongData?.data &&
+                                                    <div className='jp-track-name'>
+                                                        <span className='que_img'>
+                                                            <img src={currentSelectSongData?.data[0]?.media?.image_file_path} width={'50px'} /></span>
+                                                        <div className='que_data'>{currentSelectSongData?.data[0]?.song_title} <div className='jp-artist-name'>{'Alan walker'}</div></div>
+                                                    </div>
+                                                }
                                             </div>
                                         </a>
                                     </div>
@@ -59,7 +105,7 @@ const AudioPlayer = () => {
                                             <i className="ms_play_control"></i>
                                         </button>
 
-                                        <button className="jp-play" tabIndex={0}>
+                                        <button className="jp-play" tabIndex={0} onClick={handlePlayMusic}>
                                             <i className="ms_play_control"></i>
                                         </button>
 
@@ -93,7 +139,7 @@ const AudioPlayer = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {/* <input></input>  */}
+
                                             </div>
                                         </div>
                                     </div>
@@ -102,6 +148,7 @@ const AudioPlayer = () => {
                                             <i className="ms_play_control"></i></button>
                                         <button className="jp-repeat" tabIndex={0} title="Repeat"><i className="ms_play_control"></i></button>
                                     </div>
+
                                     <div className="jp_quality_optn custom_select">
                                         <select>
                                             <option>quality</option>

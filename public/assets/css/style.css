@@ -2159,6 +2159,11 @@ i.ms_icon.icon_share {
 	padding-left: 5px;
 	padding-top: 5px
 }
+
+/* .jp-interface .jp-controls .jp-play i{
+	background-position: 1021px 0px !important;
+} */
+
 .jp-audio.jp-state-playing .jp-play i {
 	padding-left: 0
 }
