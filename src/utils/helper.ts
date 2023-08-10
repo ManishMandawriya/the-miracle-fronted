@@ -87,3 +87,34 @@ export const toTitleCase = (str: any) => {
         });
     return null
 }
+
+
+
+export const timeToSeconds: any = (time: any) => {
+    if (time != null && time != undefined) {
+        var parts = time.split(":");
+        var hours = parseInt(parts[0]);
+        var minutes = parseInt(parts[1]);
+        var seconds = parseInt(parts[2]);
+        return hours * 3600 + minutes * 60 + seconds;
+    }
+}
+
+
+export const formatDuration = (duration: any) => {
+    // return moment
+    //   .duration(duration, "seconds")
+    //   .format("mm:ss", { trim: false });
+    var mins: any = Math.floor(duration / 60);
+    if (mins < 10) {
+        mins = "0" + String(mins);
+    }
+    var secs: any = Math.floor(duration % 60);
+    if (secs < 10) {
+        secs = '0' + String(secs);
+    }
+
+    return mins + ':' + secs;
+
+
+}

@@ -1,14 +1,17 @@
 import useMakeRequest from '@/utils/apiHelper';
+import { saveToStorage } from '@/utils/helper';
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
 
 const Login = () => {
 
-  const { loading, data, error, makeRequest } = useMakeRequest();
+  const { loading, data, error, makeRequest }: any = useMakeRequest();
   const [loginDetails, setLoginDetails]: any = useState({
     email: "",
     password: "",
     remember_me: false
   })
+  const [errorMsg, setErrorMsg]: any = useState('')
 
 
   const onSubmit = async () => {
@@ -18,7 +21,17 @@ const Login = () => {
   }
 
   useEffect(() => {
-    
+    if (error) {
+      setErrorMsg(error?.response?.data?.message)
+    } else if (data) {
+      toast.success(data?.message)
+      saveToStorage("isUserLoginToken", data?.access_token)
+      if (typeof window !== 'undefined') {
+        setTimeout(()=>{
+          window.location.reload()
+        },2500)
+      }
+    }
   }, [data, error])
   return (
     <>
@@ -32,7 +45,7 @@ const Login = () => {
               <img src="assets/images/register_img.png" alt="" className="img-fluid" />
             </div>
             <div className="ms_register_form">
-              <form onSubmit={onSubmit}>
+              <form >
                 <h2>login / Sign in</h2>
                 <div className="form-group">
                   <input
@@ -56,6 +69,7 @@ const Login = () => {
                     <i className="fa_icon form-lock" aria-hidden="true"></i>
                   </span>
                 </div>
+                {errorMsg && <p style={{ color: "red", backgroundColor: "white" }}>{errorMsg}</p>}
                 <div className="remember_checkbox">
                   <label>Keep me signed in
                     <input type="checkbox" onChange={(e) => setLoginDetails({ ...loginDetails, remember_me: e.target.checked })} />

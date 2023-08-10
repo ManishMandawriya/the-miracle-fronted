@@ -2604,6 +2604,12 @@ button.jp-shuffle .ms_play_control:hover {
 	background-position: 100px 0px !important;
 	background-color: #fff !important;
 }
+
+button.jp-repeat .ms_play_control_active {
+	background-position: 20px 0px !important;
+	background-color: #fff !important;
+}
+
 .jp-volume-bar {
 	position: relative;
 }

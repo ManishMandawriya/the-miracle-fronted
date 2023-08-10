@@ -1,4 +1,4 @@
-import { selectSong, setPlayerState } from '@/redux/actions/PlayerAction';
+import { Playlist, selectSong, setPlayerState } from '@/redux/actions/PlayerAction';
 import useMakeRequest from '@/utils/apiHelper'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,11 +9,18 @@ const WeeklyTop15 = (props: any) => {
     const showPlayer = useSelector((state: any) => state.playerState);
     const { makeRequest }: any = useMakeRequest();
 
-    const setSong = async (songData: any) => {
+    const setSong = async (songData: any, index: any) => {
         await dispatch(selectSong([songData]))
         await dispatch(setPlayerState({
             'audio_id': songData?.id
-        }))        
+        }))
+        const data = {
+            songs: top15SongsData,
+            index,
+            // length:top15SongsData?.length
+        }
+        await dispatch({ type: "PLAYLIST_STORY_CURRENT_INDEX_SUCCESS", payload: index});
+        await dispatch(Playlist(data))
         await makeRequest(songData, `songs/listen`, 'post')
     }
 
@@ -61,7 +68,7 @@ const WeeklyTop15 = (props: any) => {
                                                                         </div>
                                                                     </div>
                                                                     :
-                                                                    <div className="ms_play_icon" onClick={() => setSong(top15)}>
+                                                                    <div className="ms_play_icon" onClick={() => setSong(top15, key)}>
                                                                         <img src="assets/images/svg/play.svg" alt="" />
                                                                     </div>
                                                             }
