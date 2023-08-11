@@ -46,11 +46,11 @@ export default function ({ children }: LayoutProps) {
 
 
             <div className="ms_register_popup">
-                <div id="myModal" className="modal  centered-modal" role="dialog">
+                <div id="myModal" className="modal  centered-modal " role="dialog" >
                     <Register />
                 </div>
 
-                <div id="myModal1" className="modal  centered-modal" role="dialog">
+                <div id="myModal1" className="modal  centered-modal" role="dialog" >
                     <Login />
                 </div>
 

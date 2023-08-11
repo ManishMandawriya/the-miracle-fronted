@@ -5,7 +5,7 @@ const Register = () => {
 
     return (
         <>
-            <div className="modal-dialog register_dialog">
+            <div className="modal-dialog register_dialog modal-open">
                 <div className="modal-content">
                     {/* <button type="button" className="close" data-dismiss="modal">
                         <i className="fa_icon form_close"></i>

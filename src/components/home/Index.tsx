@@ -10,11 +10,13 @@ import TopGenres from './TopGenres'
 import LiveRadio from './LiveRadio'
 import useMakeRequest from '@/utils/apiHelper'
 import Spinner from '../layouts/Spinner'
-import { GET_FEATURED_ALBUMS, GET_FEATURED_ARTIST, GET_GENRE, GET_HOME_BANNER, GET_LIVE_RADIO, GET_NEW_RELEASE, GET_RECENT, GET_TOP15_SONG } from '@/constants/IndexConstants'
+import { GET_FEATURED_ALBUMS, GET_FEATURED_ARTIST, GET_GENRE, GET_LIVE_RADIO, GET_NEW_RELEASE, GET_TOP15_SONG } from '@/constants/IndexConstants'
+import { isUserLogin } from '@/config/Config'
 
 const Index = () => {
 
     const { loading, data, error, makeRequest }: any = useMakeRequest();
+    // console.log('isLogin>>>>>>>>>>>>>>>>>',isUserLogin);
 
 
     useEffect(() => {
@@ -25,15 +27,14 @@ const Index = () => {
 
     return (
         <React.Fragment>
+            <HomeBanner />
+            {isUserLogin && <RecentPlayedSongs />}
             {
                 data?.data?.length > 0 ?
-                    data?.data?.map((home_comp_data: any, home_comp_key: any) => {                      
+                    data?.data?.map((home_comp_data: any, home_comp_key: any) => {
 
                         return (
                             <>
-
-                                {home_comp_data?.section_type === GET_HOME_BANNER && <HomeBanner />}
-                                {home_comp_data?.section_type === GET_RECENT && <RecentPlayedSongs />}
                                 {home_comp_data?.section_type === GET_TOP15_SONG && <WeeklyTop15 HomeDataTop15={home_comp_data} />}
                                 {home_comp_data?.section_type === GET_FEATURED_ARTIST && <FeaturedArtist />}
                                 {home_comp_data?.section_type === GET_NEW_RELEASE && <NewRelease />}

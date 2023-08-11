@@ -1,15 +1,21 @@
+import { isUserLogin } from '@/config/Config';
 import { Playlist, selectSong, setPlayerState } from '@/redux/actions/PlayerAction';
 import useMakeRequest from '@/utils/apiHelper'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const WeeklyTop15 = (props: any) => {
     const dispatch = useDispatch<any>();
     const top15SongsData = props?.HomeDataTop15?.data;
     const showPlayer = useSelector((state: any) => state.playerState);
     const { makeRequest }: any = useMakeRequest();
+    let audioRef: any = document.getElementById("mainPlayer")
 
     const setSong = async (songData: any, index: any) => {
+        if(!isUserLogin){
+            return toast.warn("Please login to continue")            
+        }
         await dispatch(selectSong([songData]))
         await dispatch(setPlayerState({
             'audio_id': songData?.id
@@ -17,14 +23,18 @@ const WeeklyTop15 = (props: any) => {
         const data = {
             songs: top15SongsData,
             index,
-            // length:top15SongsData?.length
         }
-        await dispatch({ type: "PLAYLIST_STORY_CURRENT_INDEX_SUCCESS", payload: index});
+        await dispatch({ type: "PLAYLIST_STORY_CURRENT_INDEX_SUCCESS", payload: index });
         await dispatch(Playlist(data))
         await makeRequest(songData, `songs/listen`, 'post')
+        audioRef.play()
     }
 
 
+    const pauseSong = () => {
+        audioRef.pause()
+        dispatch(setPlayerState(null))
+    }
     return (
         <>
             <div className="ms_weekly_wrapper">
@@ -57,7 +67,7 @@ const WeeklyTop15 = (props: any) => {
                                                             </div>
                                                             {
                                                                 isCurrentSong ?
-                                                                    <div className="ms_play_icon">
+                                                                    <div className="ms_play_icon" onClick={pauseSong}>
                                                                         <div className="ms_bars">
                                                                             <div className="bar"></div>
                                                                             <div className="bar"></div>
