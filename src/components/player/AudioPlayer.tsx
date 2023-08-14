@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import $ from "jquery"
 import { formatDuration, timeToSeconds } from '@/utils/helper';
 import { isUserLogin } from '@/config/Config';
-// @ts-ignore
-import download from 'file-download'
+import Switch from "react-switch";
 
 const AudioPlayer = () => {
 
@@ -16,12 +15,16 @@ const AudioPlayer = () => {
     const [loop, setLoop] = useState(false)
     const [currentTime, setCurrentTime] = useState('00:00')
     const [duration, setDuration] = useState('00:00')
+    const [autoPlay, setAutoPlay] = useState<any>(false)
+
     const currentSelectSongData = useSelector((state: any) => state.songs);
     const playerState = useSelector((state: any) => state.playerState);
     const playlistState = useSelector((state: any) => state.playlistState)
-    const { data: userData, makeRequest }: any = useMakeRequest();
-    let audioRef: any = document.getElementById("mainPlayer")
     const PlaylistStoryCurrentIndex = useSelector((state: any) => state.playlistCurrentIndexState);
+
+    const audioRef: any = document.getElementById("mainPlayer")
+
+    const { data: userData, makeRequest }: any = useMakeRequest();
 
     useEffect(() => {
         if (isUserLogin) {
@@ -34,8 +37,6 @@ const AudioPlayer = () => {
             dispatch(selectSong([userData?.data?.last_played_song]))
         }
     }, [userData?.data])
-
-    // console.log('playlistState>>>>>>>>>>>>>>>>>>>>', playlistState?.data?.index);
 
 
     useEffect(() => {
@@ -93,11 +94,17 @@ const AudioPlayer = () => {
         };
     }, [audioRef]);
 
+    console.log('autoPlay outside---------------->',autoPlay);
     const handleTimeUpdate = async () => {
-
+    console.log('autoPlay inside---------------->',autoPlay);
+        
         if (audioRef.current.currentTime == audioRef?.duration) {
-            await dispatch(setPlayerState(null))
-            // await next();
+            if (autoPlay) {
+                console.log('autoPlay-------------->',autoPlay)
+                next()
+            } else {
+                await dispatch(setPlayerState(null))
+            }
         }
         const currentTime = audioRef.current.currentTime;
         const duration = audioRef.current.duration;
@@ -139,6 +146,8 @@ const AudioPlayer = () => {
 
     const next = async () => {
         let next = playlistState?.data && playlistState?.data?.songs[PlaylistStoryCurrentIndex?.data + 1]
+        console.log('next>>>>>>>>>>>', next);
+
         await dispatch({ type: "PLAYLIST_STORY_CURRENT_INDEX_SUCCESS", payload: PlaylistStoryCurrentIndex?.data + 1 });
         await dispatch(selectSong([next]))
         await dispatch(setPlayerState({ 'audio_id': next?.id }))
@@ -158,7 +167,7 @@ const AudioPlayer = () => {
     }
 
     const handleDownload = (songUrl: any, songName: any) => {
-        
+
     }
 
     const fileUrl = 'http://localhost/NestJs_Projects/the-miracle-backend/public/uploads/audio/ea2846c310723711dd67105417378a2c3.mp3';
@@ -293,10 +302,11 @@ const AudioPlayer = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="jp-toggles flex-item">
+                                            <div className="jp-toggles flex-item d-flex">
                                                 <button className="jp-shuffle" tabIndex={0} title="Shuffle">
                                                     <i className="ms_play_control"></i></button>
                                                 <button className="jp-repeat " tabIndex={0} title="Repeat" onClick={repeat}><i className={`ms_play_control ${loop && 'ms_play_control_active'}`}></i></button>
+                                                {playlistState?.data && <button><Switch checked={autoPlay} onChange={() => setAutoPlay(autoPlay === true ? false : true)} /></button>}
                                             </div>
 
                                             <div className="jp_quality_optn custom_select">
